@@ -1,4 +1,6 @@
-use std::{any::TypeId, borrow::Cow, collections::HashSet, sync::Arc};
+use std::{any::TypeId, collections::HashSet, sync::Arc};
+
+use shipyard::Label;
 
 use crate::{
     App, AppWorkload, AppWorkloadInfo, PluginAssociated, TypeIdBuckets, WorkloadSignature,
@@ -9,7 +11,7 @@ use crate::{
 /// e.g. associated by requiring something to be update packed
 #[derive(Clone)]
 pub struct CycleWorkloadAssociations {
-    workload: Cow<'static, str>,
+    workload: Box<dyn Label>,
     /// If this cycle workload is derived from a plugin, here's its [TypeId].
     #[allow(unused)]
     workload_plugin_id: TypeId,
@@ -19,7 +21,8 @@ pub struct CycleWorkloadAssociations {
 
 impl std::fmt::Debug for CycleWorkloadAssociations {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct(&self.workload)
+        let name = format!("{:?}", &self.workload);
+        f.debug_struct(&name)
             .field("plugins", &self.plugins)
             .finish()
     }
@@ -38,12 +41,12 @@ pub enum CycleCheckError {
 }
 
 pub struct CycleSummary {
-    cycle_order: Vec<Cow<'static, str>>,
+    cycle_order: Vec<Box<dyn Label>>,
     workload_info: Vec<CycleWorkloadSummary>,
 }
 
 pub struct CycleWorkloadSummary {
-    name: Cow<'static, str>,
+    name: Box<dyn Label>,
     signature: Arc<WorkloadSignature>,
 }
 
@@ -58,7 +61,8 @@ impl std::fmt::Debug for CycleSummary {
 
 impl std::fmt::Debug for CycleWorkloadSummary {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct(&self.name)
+        let mut name = format!("{:?}", self.name);
+        f.debug_struct(&name)
             .field("update_packs", &self.signature.track_update_packed)
             .field("tracks_uniques", &self.signature.track_tracked_uniques)
             .finish()

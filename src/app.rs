@@ -52,7 +52,7 @@ impl App {
         };
         let mut builder = AppBuilder::new(&self);
         plugin.build(&mut builder);
-        builder.finish_with_info_named(name, workload_type_id)
+        builder.finish_with_info_named(Box::new(name), workload_type_id)
     }
 
     /// Runs default workload
@@ -65,7 +65,7 @@ impl App {
 
     #[track_caller]
     pub fn run<'s, B, R, S: shipyard::System<'s, (), B, R>>(&'s self, s: S) -> R {
-        self.world.run(s).unwrap()
+        self.world.run(s)
     }
 
     #[track_caller]
@@ -74,6 +74,6 @@ impl App {
         s: S,
         data: Data,
     ) -> R {
-        self.world.run_with_data(s, data).unwrap()
+        self.world.run_with_data(s, data)
     }
 }

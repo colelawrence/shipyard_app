@@ -4,7 +4,6 @@ use crate::{
 use shipyard::*;
 use std::{
     any::{type_name, TypeId},
-    borrow::Cow,
     collections::hash_map::Entry,
     collections::HashMap,
     sync::Arc,
@@ -220,7 +219,7 @@ impl<'a> AppBuilder<'a> {
 
 #[derive(Clone, Debug)]
 pub struct AppWorkload {
-    pub(crate) names: Vec<std::borrow::Cow<'static, str>>,
+    pub(crate) names: Vec<Box<dyn Label>>,
 }
 
 #[derive(Clone, Debug)]
@@ -234,7 +233,7 @@ pub struct AppWorkloadInfo {
     /// Derived from this plugin
     pub(crate) plugin_id: TypeId,
     /// Workload name assigned in the world
-    pub name: Cow<'static, str>,
+    pub name: Box<dyn Label>,
 }
 
 #[derive(Clone)]
@@ -253,7 +252,7 @@ impl AppWorkload {
         for workload_name in self.names.iter() {
             let span = trace_span!("AppWorkload::run", ?workload_name);
             let _span = span.enter();
-            app.world.run_workload(&workload_name).unwrap();
+            app.world.run_workload(workload_name.clone()).unwrap();
         }
         let mut all_storages = app.world.borrow::<AllStoragesViewMut>().unwrap();
         all_storages.clear_all_removed_or_deleted();
@@ -280,7 +279,7 @@ impl<'a> AppBuilder<'a> {
     #[track_caller]
     fn finish_with_info(self) -> (AppWorkload, AppWorkloadInfo) {
         self.finish_with_info_named(
-            DEFAULT_WORKLOAD_NAME.into(),
+            Box::new(DEFAULT_WORKLOAD_NAME),
             std::any::TypeId::of::<DefaultWorkloadPlugin>(),
         )
     }
@@ -290,7 +289,7 @@ impl<'a> AppBuilder<'a> {
     #[instrument(skip(self))]
     pub(crate) fn finish_with_info_named(
         self,
-        update_stage: std::borrow::Cow<'static, str>,
+        update_stage: Box<dyn Label>,
         plugin_id: TypeId,
     ) -> (AppWorkload, AppWorkloadInfo) {
         let AppBuilder {
@@ -385,7 +384,7 @@ impl<'a> AppBuilder<'a> {
             .associate_plugin::<T>(&self.track_current_plugin, "<not provided>")
             .is_first()
         {
-            self.app.world.add_unique(component).unwrap();
+            self.app.world.add_unique(component);
         } else {
             warn!(
                 "Unique({}) already provided by another plugin in the plugin workload.",
@@ -413,7 +412,7 @@ impl<'a> AppBuilder<'a> {
             .associate_plugin::<T>(&self.track_current_plugin, "<not provided>")
             .is_first()
         {
-            self.app.world.add_unique(component).unwrap();
+            self.app.world.add_unique(component);
         } else {
             warn!(
                 "Tracked unique({}) already provided by another plugin in the plugin workload.",
