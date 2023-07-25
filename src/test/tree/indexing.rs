@@ -29,12 +29,16 @@ pub fn tree_indexing(
 ) {
     // iff ChildOf was completely deleted (does not include "removed")
     vm_child_of
-        .take_deleted()
+        .deleted()
         .into_iter()
         .map(|(id, _)| id)
         .for_each(|deleted_id: EntityId| {
             unlink_child(&mut vm_sibling_index, &mut vm_parent_index, deleted_id);
         });
+
+    // is this necessary anymore?
+    // shipyard tracks better per system, now.
+    vm_child_of.clear_all_deleted();
 
     // iff ChildOf is completely new component
     vm_child_of.inserted().iter().with_id().for_each(

@@ -22,7 +22,7 @@ impl<T: Clone + Send + Sync + Component<Tracking = track::All>> Plugin for Track
 }
 
 pub(crate) fn reset_tracked_unique<T: Component<Tracking = track::All>>(
-    mut uvm_tracked_unique_t: UniqueViewMut<T>,
+    uvm_tracked_unique_t: UniqueViewMut<T>,
 ) {
     let span = trace_span!("reset_tracked_unique", tracked = ?type_name::<T>());
     let _span = span.enter();
