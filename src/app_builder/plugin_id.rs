@@ -1,5 +1,6 @@
 use std::any::{type_name, TypeId};
 
+/// This is a stack since some plugins add other plugins creating a nest
 #[derive(Clone, Default)]
 pub struct PluginId(Vec<(TypeId, &'static str)>);
 impl PluginId {
