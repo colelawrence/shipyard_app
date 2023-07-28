@@ -350,7 +350,7 @@ impl<'a> AppBuilder<'a> {
         self
     }
 
-    /// Declare dependency on `[crate::Tracked]<T>` and add "reset tracked" as the last system.
+    /// Declare dependency on [`shipyard::Unique<T>`] component and add "reset tracked" as the last system.
     #[track_caller]
     pub fn tracks<T: Component<Tracking = track::All> + Send + Sync>(
         &mut self,
@@ -397,7 +397,7 @@ impl<'a> AppBuilder<'a> {
 
     /// Add a tracked unique value.
     ///
-    /// Accessible through the [crate::Tracked] and [crate::TrackedMut] views.
+    /// Accessible through the [shipyard::UniqueView] and [shipyard::UniqueViewMut] views.
     #[track_caller]
     pub fn add_tracked_value<T: Component<Tracking = track::All>>(
         &mut self,
