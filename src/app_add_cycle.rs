@@ -61,7 +61,7 @@ impl std::fmt::Debug for CycleSummary {
 
 impl std::fmt::Debug for CycleWorkloadSummary {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut name = format!("{:?}", self.name);
+        let name = format!("{:?}", self.name);
         f.debug_struct(&name)
             .field("update_packs", &self.signature.track_update_packed)
             .field("tracks_uniques", &self.signature.track_tracked_uniques)

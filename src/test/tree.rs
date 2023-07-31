@@ -56,9 +56,7 @@ mod tests {
             .with_system(|mut vm_child_of: ViewMut<ChildOf>| {
                 vm_child_of.clear_all_inserted_and_modified()
             })
-            .with_system(|mut vm_child_of: ViewMut<ChildOf>| {
-                vm_child_of.clear_all_deleted()
-            })
+            .with_system(|mut vm_child_of: ViewMut<ChildOf>| vm_child_of.clear_all_deleted())
             .add_to_world(&world)
             .unwrap();
 
