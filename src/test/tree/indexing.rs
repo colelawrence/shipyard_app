@@ -222,13 +222,13 @@ fn unlink_child(
 
     if let Some(prev_sibling_id) = t_prev_sibling {
         // prevsibling: set nextsibling to T's nextsibling
-        let mut prev_sibling_index = vm_sibling_index.get(prev_sibling_id.1).unwrap();
+        let prev_sibling_index = vm_sibling_index.get(prev_sibling_id.1).unwrap();
         prev_sibling_index.next_sibling = t_next_sibling;
     }
 
     if let Some(next_sibling_id) = t_next_sibling {
         // nextsibling: set prevsibling to T's prevsibling
-        let mut next_sibling_index = vm_sibling_index.get(next_sibling_id.1).unwrap();
+        let next_sibling_index = vm_sibling_index.get(next_sibling_id.1).unwrap();
         next_sibling_index.prev_sibling = t_prev_sibling;
     }
 
